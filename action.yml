@@ -1,0 +1,15 @@
+name: 'Artifact2PR'
+description: 'Upload build artifacts to a pull request'
+
+branding:
+  icon: 'cloud-upload'
+  color: 'blue'
+
+inputs:
+  files_to-upload: 
+    description: 'Files to upload'
+    required: true
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

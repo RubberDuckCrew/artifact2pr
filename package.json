@@ -1,0 +1,24 @@
+{
+  "name": "artifact2pr",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RubberDuckCrew/artifact2pr.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RubberDuckCrew/artifact2pr/issues"
+  },
+  "homepage": "https://github.com/RubberDuckCrew/artifact2pr#readme",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
