@@ -6,10 +6,15 @@ branding:
   color: 'blue'
 
 inputs:
-  files_to-upload: 
-    description: 'Files to upload'
+  github-token: 
+    description: 'GitHub token to use for authentication'
     required: true
-
+    default: '${{ github.token }}'
+  comment-if-no-artifacts:
+    description: 'Comment if no artifacts are found'
+    required: false
+    default: 'false'
+    
 runs:
   using: 'node20'
   main: 'dist/index.js'
