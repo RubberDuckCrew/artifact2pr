@@ -46,6 +46,21 @@ async function main(): Promise<void> {
 
     const body = `:package: **Build Artifacts**\n\n${artifactLinks}`;
 
+    // Previously posted comment will be deleted
+    const comments = await octokit.issues.listComments({
+        owner,
+        repo,
+        issue_number: prNumber,
+    });
+    const existing = comments.data.find(c => c.body && c.body.startsWith(':package: **Build Artifacts**'));
+    if (existing) {
+        await octokit.issues.deleteComment({
+            owner,
+            repo,
+            comment_id: existing.id,
+        });
+    }
+
     // Kommentar posten
     await octokit.issues.createComment({
         owner,
