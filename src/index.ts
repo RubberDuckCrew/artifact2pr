@@ -41,7 +41,7 @@ async function main(): Promise<void> {
 
     // Build the comment body with artifact links
     const artifactLinks = artifacts.data.artifacts.map(
-        (a) => `- [${a.name}](${a.archive_download_url})`
+        (a) => `- [${a.name}](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${a.id})`
     ).join('\n');
 
     const body = `:package: **Build Artifacts**\n\n${artifactLinks}`;
