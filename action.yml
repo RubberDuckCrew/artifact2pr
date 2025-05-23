@@ -1,8 +1,8 @@
-name: 'Artifact2PR'
+name: 'artifact2pr'
 description: 'Upload build artifacts to a pull request'
 
 branding:
-  icon: 'cloud-upload'
+  icon: 'upload'
   color: 'blue'
 
 inputs:
