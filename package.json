@@ -18,6 +18,11 @@
     "url": "https://github.com/RubberDuckCrew/artifact2pr/issues"
   },
   "homepage": "https://github.com/RubberDuckCrew/artifact2pr#readme",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
+    "@octokit/rest": "^21.1.1"
+  },
   "devDependencies": {
     "typescript": "^5.8.3"
   }
