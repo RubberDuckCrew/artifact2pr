@@ -84,6 +84,20 @@ function main() {
         // Build the comment body with artifact links
         const artifactLinks = artifacts.data.artifacts.map((a) => `- [${a.name}](${a.archive_download_url})`).join('\n');
         const body = `:package: **Build Artifacts**\n\n${artifactLinks}`;
+        // Previously posted comment will be deleted
+        const comments = yield octokit.issues.listComments({
+            owner,
+            repo,
+            issue_number: prNumber,
+        });
+        const existing = comments.data.find(c => c.body && c.body.startsWith(':package: **Build Artifacts**'));
+        if (existing) {
+            yield octokit.issues.deleteComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+            });
+        }
         // Kommentar posten
         yield octokit.issues.createComment({
             owner,
