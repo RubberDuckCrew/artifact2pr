@@ -29962,23 +29962,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(7484));
+const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const rest_1 = __nccwpck_require__(6145);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const token = core_1.default.getInput('github-token', { required: true });
+        const token = core.getInput('github-token', { required: true });
         // TODO: Add support for specifying specific artifact names
-        const commentIfNoArtifacts = core_1.default.getInput('comment-if-no-artifacts', { required: false }); // If no input, this will be an empty string ""
+        const commentIfNoArtifacts = core.getInput('comment-if-no-artifacts', { required: false }); // If no input, this will be an empty string ""
         const octokit = new rest_1.Octokit({ auth: token });
         const context = github.context;
         // Just react to pull request events
         if (!context.payload.pull_request) {
-            core_1.default.info('This action only runs on pull requests.');
+            core.info('This action only runs on pull requests.');
             return;
         }
         const prNumber = context.payload.pull_request.number;
@@ -29991,7 +29988,7 @@ function main() {
             run_id: runId,
         });
         if (artifacts.data.artifacts.length === 0) {
-            core_1.default.info('No artifacts found for workflow run with id: ' + runId);
+            core.info('No artifacts found for workflow run with id: ' + runId);
             if (commentIfNoArtifacts === 'true') {
                 yield octokit.issues.createComment({
                     owner,
@@ -30026,11 +30023,11 @@ function main() {
             issue_number: prNumber,
             body,
         });
-        core_1.default.info('Comment posted to PR: ' + prNumber);
-        core_1.default.info('Artifacts: ' + artifactLinks);
+        core.info('Comment posted to PR: ' + prNumber);
+        core.info('Artifacts: ' + artifactLinks);
     });
 }
-main().catch(err => core_1.default.setFailed(err.message));
+main().catch(err => core.setFailed(err.message));
 
 
 /***/ }),
