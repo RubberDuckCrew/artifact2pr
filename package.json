@@ -4,7 +4,8 @@
 	"description": "A GitHub Action to automatically post links to build artifacts as a comment on pull requests.",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "npx ncc build src/index.ts -o dist --license licenses.txt"
+		"build": "npx ncc build src/index.ts -o dist --license licenses.txt",
+		"prepare": "husky"
 	},
 	"repository": {
 		"type": "git",
