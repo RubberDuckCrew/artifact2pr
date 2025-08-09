@@ -30030,7 +30030,7 @@ function main() {
             .join("\n");
         core.info("📦 Artifacts: " + artifactLinks);
         // Post the new comment with artifact links
-        const body = `${identifier}\n${heading}\n\n${artifactLinks}`;
+        const body = `${identifier}\n\n${heading}\n\n${artifactLinks}`;
         const comment = yield octokit.issues.createComment({
             owner,
             repo,

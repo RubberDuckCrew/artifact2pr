@@ -78,7 +78,7 @@ async function main(): Promise<void> {
     core.info("📦 Artifacts: " + artifactLinks);
 
     // Post the new comment with artifact links
-    const body = `${identifier}\n${heading}\n\n${artifactLinks}`;
+    const body = `${identifier}\n\n${heading}\n\n${artifactLinks}`;
     const comment = await octokit.issues.createComment({
         owner,
         repo,
