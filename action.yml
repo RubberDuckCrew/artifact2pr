@@ -10,10 +10,14 @@ inputs:
     description: 'GitHub token to use for authentication'
     required: true
     default: '${{ github.token }}'
+  comment-heading:
+    description: 'Heading for the comment'
+    required: false
+    default: '📦 **Build Artifacts**'
   comment-if-no-artifacts:
     description: 'Comment if no artifacts are found'
     required: false
-    default: 'false'
+    default: ''
     
 runs:
   using: 'node20'

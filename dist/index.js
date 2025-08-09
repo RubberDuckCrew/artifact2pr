@@ -29962,72 +29962,84 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const rest_1 = __nccwpck_require__(6145);
+const package_json_1 = __importDefault(__nccwpck_require__(8330));
+main().catch((err) => core.setFailed(err.message));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('github-token', { required: true });
-        // TODO: Add support for specifying specific artifact names
-        const commentIfNoArtifacts = core.getInput('comment-if-no-artifacts', { required: false }); // If no input, this will be an empty string ""
+        const token = core.getInput("github-token", { required: true });
+        const heading = core.getInput("comment-heading", { required: true });
+        const commentIfNoArtifacts = core.getInput("comment-if-no-artifacts");
         const octokit = new rest_1.Octokit({ auth: token });
-        const context = github.context;
-        // Just react to pull request events
-        if (!context.payload.pull_request) {
-            core.info('This action only runs on pull requests.');
+        core.info(`🛠️ Running RubberDuckCrew/artifact2pr@v${package_json_1.default.version}`);
+        // Check if the action is triggered by a pull request
+        if (!github.context.payload.pull_request) {
+            core.info("⚠️ This action only runs on pull requests.");
             return;
         }
-        const prNumber = context.payload.pull_request.number;
-        const { owner, repo } = context.repo;
+        const prNumber = github.context.payload.pull_request.number;
+        const { owner, repo } = github.context.repo;
+        const identifier = "<!--" +
+            btoa(`RubberDuckCrew/artifact2pr: ${owner}/${repo}#${prNumber}`) +
+            "-->";
         // Fetch artifacts from the workflow run
-        const runId = context.runId;
+        const runId = github.context.runId;
         const artifacts = yield octokit.actions.listWorkflowRunArtifacts({
             owner,
             repo,
             run_id: runId,
         });
-        if (artifacts.data.artifacts.length === 0) {
-            core.info('No artifacts found for workflow run with id: ' + runId);
-            if (commentIfNoArtifacts === 'true') {
-                yield octokit.issues.createComment({
-                    owner,
-                    repo,
-                    issue_number: prNumber,
-                    body: ':warning: **No artifacts found**',
-                });
-            }
-            return;
-        }
-        // Build the comment body with artifact links
-        const artifactLinks = artifacts.data.artifacts.map((a) => `- [${a.name}](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${a.id})`).join('\n');
-        const body = `:package: **Build Artifacts**\n\n${artifactLinks}`;
-        // Previously posted comment will be deleted
+        core.info(`📦 Found ${artifacts.data.artifacts.length} artifacts for run ${runId}`);
+        // Delete existing comment if it exists
         const comments = yield octokit.issues.listComments({
             owner,
             repo,
             issue_number: prNumber,
         });
-        const existing = comments.data.find(c => c.body && c.body.startsWith(':package: **Build Artifacts**'));
+        const existing = comments.data.find((c) => { var _a; return (_a = c.body) === null || _a === void 0 ? void 0 : _a.startsWith(identifier); });
         if (existing) {
             yield octokit.issues.deleteComment({
                 owner,
                 repo,
                 comment_id: existing.id,
             });
+            core.info(`🗑️ Deleted existing comment with ID ${existing.id} on PR ${prNumber}`);
         }
-        // Kommentar posten
-        yield octokit.issues.createComment({
+        // If no artifacts are found, optionally comment and exit
+        if (artifacts.data.artifacts.length === 0) {
+            core.info(`⚠️ No artifacts found for workflow run ${runId}`);
+            if (commentIfNoArtifacts.length !== 0) {
+                yield octokit.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: prNumber,
+                    body: commentIfNoArtifacts,
+                });
+            }
+            return;
+        }
+        // Build the comment body with artifact links
+        const artifactLinks = artifacts.data.artifacts
+            .map((artifact) => `- [${artifact.name}](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${artifact.id})`)
+            .join("\n");
+        core.info("📦 Artifacts: " + artifactLinks);
+        // Post the new comment with artifact links
+        const body = `${identifier}\n${heading}\n\n${artifactLinks}`;
+        const comment = yield octokit.issues.createComment({
             owner,
             repo,
             issue_number: prNumber,
-            body,
+            body: body,
         });
-        core.info('Comment posted to PR: ' + prNumber);
-        core.info('Artifacts: ' + artifactLinks);
+        core.info(`✅ Comment posted to PR ${prNumber} with ID ${comment.data.id}`);
     });
 }
-main().catch(err => core.setFailed(err.message));
 
 
 /***/ }),
@@ -36075,6 +36087,14 @@ const dist_src_Octokit = Octokit.plugin(requestLog, legacyRestEndpointMethods, p
 );
 
 
+
+/***/ }),
+
+/***/ 8330:
+/***/ ((module) => {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"artifact2pr","version":"0.0.0","description":"A GitHub Action to automatically post links to build artifacts as a comment on pull requests.","main":"dist/index.js","scripts":{"build":"npx ncc build src/index.ts -o dist --license licenses.txt","prepare":"husky"},"repository":{"type":"git","url":"git+https://github.com/RubberDuckCrew/artifact2pr.git"},"keywords":[],"author":"RubberDuckCrew","license":"MIT","bugs":{"url":"https://github.com/RubberDuckCrew/artifact2pr/issues"},"homepage":"https://github.com/RubberDuckCrew/artifact2pr#readme","dependencies":{"@actions/core":"^1.11.1","@actions/github":"^6.0.1","@octokit/rest":"^22.0.0"},"devDependencies":{"@vercel/ncc":"^0.38.3","husky":"^9.1.7","typescript":"^5.8.3"}}');
 
 /***/ })
 
