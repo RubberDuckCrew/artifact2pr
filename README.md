@@ -10,11 +10,11 @@ A GitHub Action to automatically post links to build artifacts as a comment on p
 
 ## Inputs
 
-| Name                      | Description                       | Required | Default                  |
-| ------------------------- | --------------------------------- | -------- | ------------------------ |
-| `github-token`            | GitHub token for authentication   | Yes      | `${{ github.token }}`    |
-| `comment-heading`         | Heading for the comment           | No       | `📦 **Build Artifacts**` |
-| `comment-if-no-artifacts` | Comment if no artifacts are found | No       | `""`                     |
+| Name                      | Description                              | Required | Default                  |
+| ------------------------- | ---------------------------------------- | -------- | ------------------------ |
+| `github-token`            | GitHub token for authentication          | Yes      | `${{ github.token }}`    |
+| `comment-heading`         | Heading for the comment                  | No       | `📦 **Build Artifacts**` |
+| `comment-if-no-artifacts` | Comment posted if no artifacts are found | No       | `""`                     |
 
 ## Usage
 

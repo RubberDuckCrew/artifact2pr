@@ -15,7 +15,7 @@ inputs:
     required: false
     default: '📦 **Build Artifacts**'
   comment-if-no-artifacts:
-    description: 'Comment if no artifacts are found'
+    description: 'Comment posted if no artifacts are found'
     required: false
     default: ''
     
