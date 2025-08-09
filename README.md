@@ -29,6 +29,13 @@ Add this action to your workflow after your build and artifact upload steps:
       comment-if-no-artifacts: "⚠️ No artifacts found."
 ```
 
+**Note:** Your workflow or job must include the following permissions:
+
+```yaml
+permissions:
+    pull-requests: write
+```
+
 ## Example Workflow
 
 ```yaml
@@ -36,6 +43,9 @@ name: Build and Post Artifacts
 on:
     pull_request:
         types: [labeled, opened, synchronize]
+
+permissions:
+    pull-requests: write
 
 jobs:
     build:
