@@ -1,31 +1,31 @@
 {
-	"name": "artifact2pr",
-	"version": "0.0.0",
-	"description": "A GitHub Action to automatically post links to build artifacts as a comment on pull requests.",
-	"main": "dist/index.js",
-	"scripts": {
-		"build": "npx ncc build src/index.ts -o dist --license licenses.txt",
-		"prepare": "husky"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RubberDuckCrew/artifact2pr.git"
-	},
-	"keywords": [],
-	"author": "RubberDuckCrew",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/RubberDuckCrew/artifact2pr/issues"
-	},
-	"homepage": "https://github.com/RubberDuckCrew/artifact2pr#readme",
-	"dependencies": {
-		"@actions/core": "^1.11.1",
-		"@actions/github": "^6.0.1",
-		"@octokit/rest": "^22.0.0"
-	},
-	"devDependencies": {
-		"@vercel/ncc": "^0.38.3",
-		"husky": "^9.1.7",
-		"typescript": "^5.8.3"
-	}
+    "name": "artifact2pr",
+    "version": "1.0.0",
+    "description": "A GitHub Action to automatically post links to build artifacts as a comment on pull requests.",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "npx ncc build src/index.ts -o dist --license licenses.txt",
+        "prepare": "husky"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RubberDuckCrew/artifact2pr.git"
+    },
+    "keywords": [],
+    "author": "RubberDuckCrew",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/RubberDuckCrew/artifact2pr/issues"
+    },
+    "homepage": "https://github.com/RubberDuckCrew/artifact2pr#readme",
+    "dependencies": {
+        "@actions/core": "^1.11.1",
+        "@actions/github": "^6.0.1",
+        "@octokit/rest": "^22.0.0"
+    },
+    "devDependencies": {
+        "@vercel/ncc": "^0.38.3",
+        "husky": "^9.1.7",
+        "typescript": "^5.8.3"
+    }
 }

@@ -61,7 +61,7 @@ jobs:
                   name: my-artifact
                   path: ./path/to/artifact
             - name: Post artifact links to PR
-              uses: RubberDuckCrew/artifact2pr@v0
+              uses: RubberDuckCrew/artifact2pr@v1
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   comment-heading: "📦 **Build Artifacts**"
