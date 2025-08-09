@@ -29985,9 +29985,9 @@ function main() {
         }
         const prNumber = github.context.payload.pull_request.number;
         const { owner, repo } = github.context.repo;
-        const identifier = "<!--" +
-            btoa(`RubberDuckCrew/artifact2pr: ${owner}/${repo}#${prNumber}`) +
-            "-->";
+        const identifier = "<!-- RubberDuckCrew/artifact2pr - " +
+            btoa(`${owner}/${repo}#${prNumber}`) +
+            " -->";
         // Fetch artifacts from the workflow run
         const runId = github.context.runId;
         const artifacts = yield octokit.actions.listWorkflowRunArtifacts({
