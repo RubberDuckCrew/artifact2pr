@@ -1,0 +1,29 @@
+name: Test artifact2pr Action
+on:
+    pull_request:
+        types: [labeled, opened, synchronize]
+
+permissions:
+    pull-requests: write
+
+jobs:
+    test-artifact2pr:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Create dummy artifact
+              run: |
+                  mkdir -p test-artifacts
+                  echo "Hello World" > test-artifacts/hello.txt
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dummy-artifact
+                  path: test-artifacts/hello.txt
+            - name: Post artifact links to PR
+              uses: ./
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  comment-heading: "🧪 **Test Artifacts**"
+                  comment-if-no-artifacts: "⚠️ No artifacts found in test run."
