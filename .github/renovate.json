@@ -2,5 +2,6 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "github>RubberDuckCrew/.github//configs/renovate/renovate-rubberduckcrew.json"
-    ]
+    ],
+    "reviewers": ["team:action-development"],
 }
