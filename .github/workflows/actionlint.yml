@@ -1,0 +1,9 @@
+name: Actionlint
+
+on:
+    pull_request:
+        paths: [.github/workflows/**]
+
+jobs:
+    run:
+        uses: RubberDuckCrew/.github/.github/workflows/action-actionlint.yml@main

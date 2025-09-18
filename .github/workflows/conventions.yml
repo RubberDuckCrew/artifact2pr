@@ -1,0 +1,12 @@
+name: Enforce conventions
+
+on:
+    pull_request:
+        types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+    run:
+        uses: RubberDuckCrew/.github/.github/workflows/action-conventions.yml@main
+        permissions:
+            issues: write
+            pull-requests: write
