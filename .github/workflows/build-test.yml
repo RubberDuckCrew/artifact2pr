@@ -1,0 +1,91 @@
+name: Build and Test Action
+
+on: [push]
+
+jobs:
+    build:
+        name: Build Action
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+            - name: Npm setup
+              uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+              with:
+                  node-version: 24.11.1
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run tests
+              run: npm test
+
+            - name: Build action
+              run: npm run build
+
+            - name: Upload action artifact
+              uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+              with:
+                  name: action-dist
+                  path: dist
+
+    test:
+        name: Test Action
+        runs-on: ubuntu-latest
+        needs: build
+
+        permissions:
+            pull-requests: write
+
+        steps:
+            - name: Create test file
+              run: |
+                  mkdir -p test-artifact
+                  echo "Creating artifact for ${{ github.ref }} on ${{ github.sha }}" > test-artifact/test.txt
+
+            - name: Checkout repository
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+              with:
+                  sparse-checkout: action.yml
+
+            - name: Download action artifact
+              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+              with:
+                  name: action-dist
+                  path: dist
+
+            - name: Test action in workflow
+              uses: ./
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  comment-heading: "🧪 **Test Artifacts**"
+                  comment-if-no-artifacts: "⚠️ No artifacts found in test run."
+
+    commit-build:
+        name: Commit Action Build
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: test
+
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+            - name: Download action artifact
+              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+              with:
+                  name: action-dist
+                  path: dist
+
+            - name: Commit dist directory
+              if: github.ref == 'refs/heads/main'
+              uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7
+              with:
+                  commit_message: "📦 Update action build [skip ci]"
+                  file_pattern: "dist/**"
