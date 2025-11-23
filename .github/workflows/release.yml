@@ -50,7 +50,7 @@ jobs:
               uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2
               with:
                   tag_name: "v${{ github.event.inputs.version }}"
-                  name: "DeleteBranchCaches ${{ github.event.inputs.version }}"
+                  name: "artifact2pr ${{ github.event.inputs.version }}"
                   draft: false
                   prerelease: false
 
