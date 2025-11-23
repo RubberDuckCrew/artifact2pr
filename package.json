@@ -26,6 +26,6 @@
     "devDependencies": {
         "@vercel/ncc": "0.38.4",
         "husky": "9.1.7",
-        "typescript": "5.9.2"
+        "typescript": "5.9.3"
     }
 }
