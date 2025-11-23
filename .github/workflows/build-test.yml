@@ -50,6 +50,12 @@ jobs:
                   mkdir -p test-artifact
                   echo "Creating artifact for ${{ github.ref }} on ${{ github.sha }}" > test-artifact/test.txt
 
+            - name: Upload test artifact
+              uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+              with:
+                  name: dummy-artifact
+                  path: test-artifact/test.txt
+
             - name: Checkout repository
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
               with:
