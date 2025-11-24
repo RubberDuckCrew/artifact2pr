@@ -78,7 +78,7 @@ jobs:
         name: Commit Action Build
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
-        needs: test
+        needs: build
 
         permissions:
             contents: write
