@@ -1,0 +1,63 @@
+name: Create Release
+run-name: Create Release v${{ github.event.inputs.version }}
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: "The version to release (e.g., 1.2.3). The 'v' prefix is added automatically."
+                required: true
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        name: Create Release
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+              with:
+                  fetch-depth: 0
+
+            - name: Npm setup
+              uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+              with:
+                  node-version: 24.11.1
+                  cache: "npm"
+
+            - name: Update package.json version
+              run: npm version --new-version ${{ github.event.inputs.version }} --no-git-tag-version
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Run tests
+              run: npm test
+
+            - name: Build action
+              run: npm run build
+
+            - name: Commit changes
+              uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7
+              with:
+                  commit_message: "🔖 Release v${{ github.event.inputs.version }} [skip ci]"
+                  tagging_message: "v${{ github.event.inputs.version }}"
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2
+              with:
+                  tag_name: "v${{ github.event.inputs.version }}"
+                  name: "artifact2pr ${{ github.event.inputs.version }}"
+                  draft: false
+                  prerelease: false
+
+            - name: Update Major Release Tag
+              run: |
+                  MAJOR_VERSION="v$(echo "${{ github.event.inputs.version }}" | cut -d. -f1)"
+                  git config --global user.name 'github-actions[bot]'
+                  git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+                  git tag -fa "${MAJOR_VERSION}" -m "🔖 Update major version tag to v${{ github.event.inputs.version }}"
+                  git push origin "${MAJOR_VERSION}" --force
