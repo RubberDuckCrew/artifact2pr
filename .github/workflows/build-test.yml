@@ -113,3 +113,5 @@ jobs:
               with:
                   commit_message: "📦 Update action build [skip ci]"
                   file_pattern: "dist/**"
+                  commit_user_name: "RubberDuckCrew Bot"
+                  commit_user_email: "231319061+rubberduckcrew-bot[bot]@users.noreply.github.com"
