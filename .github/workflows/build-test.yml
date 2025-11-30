@@ -78,14 +78,29 @@ jobs:
         name: Commit Action Build
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
-        needs: test
+        needs: build
 
         permissions:
             contents: write
 
         steps:
+            - name: Check if secrets are available
+              id: check-secrets
+              run: |
+                  echo "secrets_available=${{ vars.RUBBERDUCKCREW_BOT_APP_ID && secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY && 'true' || '' }}" >> "$GITHUB_OUTPUT"
+
+            - name: Create GitHub App token
+              uses: actions/create-github-app-token@7e473efe3cb98aa54f8d4bac15400b15fad77d94 # v2
+              if: ${{ steps.check-secrets.outputs.secrets_available }}
+              id: app-token
+              with:
+                  app-id: ${{ vars.RUBBERDUCKCREW_BOT_APP_ID }}
+                  private-key: ${{ secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY }}
+        
             - name: Checkout repository
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+              with:
+                  token: ${{ steps.app-token.outputs.token || github.token }}
 
             - name: Download action artifact
               uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
@@ -94,8 +109,9 @@ jobs:
                   path: dist
 
             - name: Commit dist directory
-              if: github.ref == 'refs/heads/main'
               uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7
               with:
                   commit_message: "📦 Update action build [skip ci]"
                   file_pattern: "dist/**"
+                  commit_user_name: "RubberDuckCrew Bot"
+                  commit_user_email: "231319061+rubberduckcrew-bot[bot]@users.noreply.github.com"
