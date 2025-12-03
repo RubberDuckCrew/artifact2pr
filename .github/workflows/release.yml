@@ -17,6 +17,23 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Check if secrets are available
+              id: check-secrets
+              run: |
+                  echo "secrets_available=${{
+                    vars.RUBBERDUCKCREW_BOT_APP_ID &&
+                    secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY &&
+                    'true' || ''
+                  }}" >> "$GITHUB_OUTPUT"
+
+            - name: Create GitHub App token
+              uses: actions/create-github-app-token@7e473efe3cb98aa54f8d4bac15400b15fad77d94 # v2
+              if: ${{ steps.check-secrets.outputs.secrets_available }}
+              id: app-token
+              with:
+                  app-id: ${{ vars.RUBBERDUCKCREW_BOT_APP_ID }}
+                  private-key: ${{ secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY }}
+
             - name: Checkout repository
               uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
               with:
@@ -41,17 +58,18 @@ jobs:
               run: npm run build
 
             - name: Commit changes
-              uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7
+              uses: suzuki-shunsuke/commit-action@87b297f0ce551411b43d1880f4fb3cbc60381055 # v0.0.14
               with:
                   commit_message: "🔖 Release v${{ github.event.inputs.version }} [skip ci]"
-                  tagging_message: "v${{ github.event.inputs.version }}"
+                  github_token: ${{ steps.app-token.outputs.token || github.token }}
+                  fail_on_self_push: false
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
               with:
                   tag_name: "v${{ github.event.inputs.version }}"
-                  name: "artifact2pr ${{ github.event.inputs.version }}"
-                  draft: false
+                  name: "🔖 artifact2pr ${{ github.event.inputs.version }}"
+                  draft: true
                   prerelease: false
 
             - name: Update Major Release Tag
