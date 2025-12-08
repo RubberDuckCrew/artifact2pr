@@ -127,4 +127,5 @@ jobs:
                   files: |
                       dist/index.js
                       dist/licenses.txt
+                  github_token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
                   fail_on_self_push: false
