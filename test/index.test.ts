@@ -7,16 +7,15 @@ vi.mock("@actions/core", () => ({
     setFailed: vi.fn(),
 }));
 
-let mockMain: any = vi.fn();
+const mockMain = vi.fn();
 vi.mock("../src/main", () => ({
-    main: (...args: any[]) => mockMain(...args),
+    main: mockMain,
 }));
 
 describe("index", () => {
     beforeEach(() => {
         vi.resetModules();
         vi.clearAllMocks();
-        mockMain = vi.fn();
     });
 
     function runIndex() {
