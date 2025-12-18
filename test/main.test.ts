@@ -47,6 +47,9 @@ vi.mock("../src/commentDelete", () => ({
 describe("main()", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        github.context.payload = { pull_request: { number: 11 } };
+        (github.context as any).repo = { owner: "owner", repo: "repo" };
+        github.context.runId = 123;
     });
 
     it("posts a comment when artifacts exist", async () => {
