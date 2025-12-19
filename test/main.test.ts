@@ -41,9 +41,6 @@ vi.mock("../src/commentDelete", () => ({
     deleteExistingComments: vi.fn(),
 }));
 
-(globalThis as any).btoa = (str: string) =>
-    (globalThis as any).Buffer.from(str).toString("base64");
-
 describe("main()", () => {
     beforeEach(() => {
         vi.clearAllMocks();
