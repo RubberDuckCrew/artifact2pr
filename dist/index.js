@@ -31127,6 +31127,52 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(7484));
+const main_1 = __nccwpck_require__(1730);
+(0, main_1.main)().catch((err) => core.setFailed(err.message));
+
+
+/***/ }),
+
+/***/ 1730:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -31140,6 +31186,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.main = main;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const rest_1 = __nccwpck_require__(6145);
@@ -31147,14 +31194,12 @@ const package_json_1 = __importDefault(__nccwpck_require__(8330));
 const artifacts_1 = __nccwpck_require__(8776);
 const commentPost_1 = __nccwpck_require__(1736);
 const commentDelete_1 = __nccwpck_require__(4477);
-let octokit;
-main().catch((err) => core.setFailed(err.message));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const token = core.getInput("github-token", { required: true });
         const heading = core.getInput("comment-heading", { required: true });
         const commentIfNoArtifacts = core.getInput("comment-if-no-artifacts");
-        octokit = new rest_1.Octokit({ auth: token });
+        const octokit = new rest_1.Octokit({ auth: token });
         core.info(`🛠️ Running RubberDuckCrew/artifact2pr@v${package_json_1.default.version}`);
         const { owner, repo, prNumber, identifier, runId } = parseContext();
         const artifacts = yield (0, artifacts_1.getArtifacts)(octokit, owner, repo, runId);
@@ -31178,7 +31223,7 @@ function parseContext() {
     const prNumber = github.context.payload.pull_request.number;
     const { owner, repo } = github.context.repo;
     const identifier = "<!-- RubberDuckCrew/artifact2pr - " +
-        btoa(`${owner}/${repo}#${prNumber}`) +
+        globalThis.btoa(`${owner}/${repo}#${prNumber}`) +
         " -->";
     const runId = github.context.runId;
     return { owner, repo, prNumber, identifier, runId };
