@@ -1,5 +1,10 @@
 # Artifact2PR
 
+[![Release](https://img.shields.io/github/v/release/RubberDuckCrew/artifact2pr?style=flat-square&color=blue)](https://github.com/RubberDuckCrew/artifact2pr/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/RubberDuckCrew/artifact2pr/build-test.yml?style=flat-square&label=Build%20and%20Test&color=lime)](https://github.com/RubberDuckCrew/artifact2pr/actions/workflows/build-test.yml)
+[![Last Commit](https://img.shields.io/github/last-commit/RubberDuckCrew/artifact2pr?style=flat-square&color=orange)](https://github.com/RubberDuckCrew/artifact2pr/commits/main)
+[![License: MIT](https://img.shields.io/github/license/RubberDuckCrew/artifact2pr?style=flat-square&color=yellow)](LICENSE)
+
 A GitHub Action to automatically post links to build artifacts as a comment on pull requests.
 
 ## Features
