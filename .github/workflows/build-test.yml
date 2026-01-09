@@ -124,8 +124,6 @@ jobs:
               uses: suzuki-shunsuke/commit-action@f28421acc277a6d6a9c1f94ea449076ad77dba67 # v0.1.0
               with:
                   commit_message: "📦 Update action build [skip ci]"
-                  files: |
-                      dist/index.js
-                      dist/licenses.txt
+                  files: dist/
                   github_token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
                   fail_on_self_push: false
