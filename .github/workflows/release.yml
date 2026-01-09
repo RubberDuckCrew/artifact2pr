@@ -61,6 +61,10 @@ jobs:
               uses: suzuki-shunsuke/commit-action@f28421acc277a6d6a9c1f94ea449076ad77dba67 # v0.1.0
               with:
                   commit_message: "🔖 Release v${{ github.event.inputs.version }} [skip ci]"
+                  files: |
+                      dist/
+                      package.json
+                      package-lock.json
                   github_token: ${{ steps.app-token.outputs.token || github.token }}
                   fail_on_self_push: false
 
