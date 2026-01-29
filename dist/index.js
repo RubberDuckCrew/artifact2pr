@@ -36046,7 +36046,7 @@ const dist_src_Octokit = Octokit.plugin(requestLog, legacyRestEndpointMethods, p
 
 
 ;// CONCATENATED MODULE: ./package.json
-const package_namespaceObject = {"rE":"1.0.0"};
+const package_namespaceObject = {"rE":"1.1.0"};
 ;// CONCATENATED MODULE: ./src/artifacts.ts
 var artifacts_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

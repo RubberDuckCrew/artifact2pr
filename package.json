@@ -1,6 +1,6 @@
 {
     "name": "artifact2pr",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "A GitHub Action to automatically post links to build artifacts as a comment on pull requests.",
     "repository": {
         "type": "git",
