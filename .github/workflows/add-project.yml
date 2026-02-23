@@ -1,10 +1,10 @@
 name: Add to project
 
 on:
-    issues:
-        types: [opened]
+  issues:
+    types: [opened]
 
 jobs:
-    run:
-        uses: RubberDuckCrew/.github/.github/workflows/action-add-project.yml@main
-        secrets: inherit
+  run:
+    uses: RubberDuckCrew/.github/.github/workflows/action-add-project.yml@main
+    secrets: inherit

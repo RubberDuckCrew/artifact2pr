@@ -1,24 +1,24 @@
-name: 'artifact2pr'
-description: 'Upload build artifacts to a pull request'
+name: "artifact2pr"
+description: "Upload build artifacts to a pull request"
 
 branding:
-  icon: 'upload'
-  color: 'blue'
+  icon: "upload"
+  color: "blue"
 
 inputs:
-  github-token: 
-    description: 'GitHub token to use for authentication'
+  github-token:
+    description: "GitHub token to use for authentication"
     required: true
-    default: '${{ github.token }}'
+    default: "${{ github.token }}"
   comment-heading:
-    description: 'Heading for the comment'
+    description: "Heading for the comment"
     required: false
-    default: '📦 **Build Artifacts**'
+    default: "📦 **Build Artifacts**"
   comment-if-no-artifacts:
-    description: 'Comment posted if no artifacts are found'
+    description: "Comment posted if no artifacts are found"
     required: false
-    default: ''
-    
+    default: ""
+
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: "node20"
+  main: "dist/index.js"
