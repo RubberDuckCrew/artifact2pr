@@ -16,6 +16,7 @@
   "engines": {
     "node": ">=24.0.0 <=24"
   },
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx ncc build src/index.ts -o dist --license licenses.txt",
@@ -29,6 +30,7 @@
     "@octokit/rest": "22.0.1"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@vercel/ncc": "0.38.4",
     "@vitest/coverage-v8": "4.0.18",
     "eslint": "10.0.1",
