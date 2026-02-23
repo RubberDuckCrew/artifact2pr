@@ -94,6 +94,9 @@ describe("main()", () => {
     await expect(main()).rejects.toThrow(
       "This action only runs on pull requests.",
     );
+    expect(deleteExistingComments).not.toHaveBeenCalled();
+    expect(postComment).not.toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
   });
 
   it("does not post when no artifacts and no comment message", async () => {
