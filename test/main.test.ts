@@ -73,7 +73,16 @@ describe("main()", () => {
     await main();
 
     expect(Octokit).toHaveBeenCalledWith({ auth: "secret" });
-    expect(postComment).toHaveBeenCalled();
+    expect(deleteExistingComments).toHaveBeenCalled();
+    expect(postComment).toHaveBeenCalledWith(
+      { __auth: "secret" },
+      "owner",
+      "repo",
+      11,
+      "<!-- RubberDuckCrew/artifact2pr - b3duZXIvcmVwbyMxMQ== -->",
+      "Heading",
+      "- [a](l)",
+    );
     expect(core.info).toHaveBeenCalledWith(
       expect.stringContaining("✅ Comment posted"),
     );
