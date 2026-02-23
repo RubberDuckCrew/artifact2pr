@@ -57,6 +57,7 @@ describe("main()", () => {
       return "";
     });
     vi.mocked(checkIfArtifacts).mockResolvedValue(true);
+    vi.mocked(getArtifacts).mockResolvedValue([]);
     vi.mocked(buildArtifactLinks).mockReturnValue("- [a](l)");
     vi.mocked(postComment).mockResolvedValue({
       data: { id: 1 },
