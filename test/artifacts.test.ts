@@ -7,8 +7,13 @@ import {
   Artifact,
 } from "../src/artifacts";
 
+interface MockOctokit {
+  actions: { listWorkflowRunArtifacts: ReturnType<typeof vi.fn> };
+  issues: { createComment: ReturnType<typeof vi.fn> };
+}
+
 describe("artifacts", () => {
-  let mockOctokit: Octokit;
+  let mockOctokit: MockOctokit;
 
   beforeEach(() => {
     mockOctokit = {
@@ -18,7 +23,7 @@ describe("artifacts", () => {
       issues: {
         createComment: vi.fn(),
       },
-    } as any;
+    };
   });
 
   describe("getArtifacts", () => {
@@ -26,12 +31,17 @@ describe("artifacts", () => {
       const mockArtifacts = [
         { id: 1, name: "artifact1" },
         { id: 2, name: "artifact2" },
-      ];
-      (mockOctokit.actions.listWorkflowRunArtifacts as any).mockResolvedValue({
+      ] as Artifact[];
+      mockOctokit.actions.listWorkflowRunArtifacts.mockResolvedValue({
         data: { artifacts: mockArtifacts },
       });
 
-      const result = await getArtifacts(mockOctokit, "owner", "repo", 123);
+      const result = await getArtifacts(
+        mockOctokit as unknown as Octokit,
+        "owner",
+        "repo",
+        123,
+      );
 
       expect(result).toEqual(mockArtifacts);
       expect(mockOctokit.actions.listWorkflowRunArtifacts).toHaveBeenCalledWith(
@@ -46,10 +56,10 @@ describe("artifacts", () => {
 
   describe("checkIfArtifacts", () => {
     it("should return true when artifacts exist", async () => {
-      const artifacts: Artifact[] = [{ id: 1, name: "artifact1" } as Artifact];
+      const artifacts = [{ id: 1, name: "artifact1" }] as Artifact[];
 
       const result = await checkIfArtifacts(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         artifacts,
         "owner",
         "repo",
@@ -62,10 +72,10 @@ describe("artifacts", () => {
     });
 
     it("should return false when no artifacts and no comment message", async () => {
-      const artifacts: Artifact[] = [];
+      const artifacts = [] as Artifact[];
 
       const result = await checkIfArtifacts(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         artifacts,
         "owner",
         "repo",
@@ -78,12 +88,12 @@ describe("artifacts", () => {
     });
 
     it("should post comment and return false when no artifacts with comment message", async () => {
-      const artifacts: Artifact[] = [];
+      const artifacts = [] as Artifact[];
       const commentMessage = "No artifacts found";
-      (mockOctokit.issues.createComment as any).mockResolvedValue({});
+      mockOctokit.issues.createComment.mockResolvedValue({});
 
       const result = await checkIfArtifacts(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         artifacts,
         "owner",
         "repo",
@@ -103,9 +113,7 @@ describe("artifacts", () => {
 
   describe("buildArtifactLinks", () => {
     it("should build markdown links for single artifact", () => {
-      const artifacts: Artifact[] = [
-        { id: 123, name: "test-artifact" } as Artifact,
-      ];
+      const artifacts = [{ id: 123, name: "test-artifact" }] as Artifact[];
 
       const result = buildArtifactLinks(artifacts, "owner", "repo", 456);
 
@@ -115,11 +123,11 @@ describe("artifacts", () => {
     });
 
     it("should build markdown links for multiple artifacts", () => {
-      const artifacts: Artifact[] = [
-        { id: 1, name: "artifact-one" } as Artifact,
-        { id: 2, name: "artifact-two" } as Artifact,
-        { id: 3, name: "artifact-three" } as Artifact,
-      ];
+      const artifacts = [
+        { id: 1, name: "artifact-one" },
+        { id: 2, name: "artifact-two" },
+        { id: 3, name: "artifact-three" },
+      ] as Artifact[];
 
       const result = buildArtifactLinks(
         artifacts,
@@ -136,7 +144,7 @@ describe("artifacts", () => {
     });
 
     it("should return empty string for empty artifacts array", () => {
-      const artifacts: Artifact[] = [];
+      const artifacts = [] as Artifact[];
 
       const result = buildArtifactLinks(artifacts, "owner", "repo", 123);
 

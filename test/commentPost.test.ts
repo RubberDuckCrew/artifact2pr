@@ -2,15 +2,19 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Octokit } from "@octokit/rest";
 import { postComment } from "../src/commentPost";
 
+interface MockOctokit {
+  issues: { createComment: ReturnType<typeof vi.fn> };
+}
+
 describe("commentPost", () => {
-  let mockOctokit: Octokit;
+  let mockOctokit: MockOctokit;
 
   beforeEach(() => {
     mockOctokit = {
       issues: {
         createComment: vi.fn(),
       },
-    } as any;
+    };
     vi.clearAllMocks();
   });
 
@@ -19,10 +23,10 @@ describe("commentPost", () => {
       const mockResponse = {
         data: { id: 123, body: "test comment" },
       };
-      (mockOctokit.issues.createComment as any).mockResolvedValue(mockResponse);
+      mockOctokit.issues.createComment.mockResolvedValue(mockResponse);
 
       const result = await postComment(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "owner",
         "repo",
         42,
@@ -42,10 +46,10 @@ describe("commentPost", () => {
 
     it("should correctly format comment body with identifier, heading and links", async () => {
       const mockResponse = { data: { id: 456 } };
-      (mockOctokit.issues.createComment as any).mockResolvedValue(mockResponse);
+      mockOctokit.issues.createComment.mockResolvedValue(mockResponse);
 
       await postComment(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "testowner",
         "testrepo",
         10,
@@ -64,10 +68,10 @@ describe("commentPost", () => {
 
     it("should handle empty artifact links", async () => {
       const mockResponse = { data: { id: 789 } };
-      (mockOctokit.issues.createComment as any).mockResolvedValue(mockResponse);
+      mockOctokit.issues.createComment.mockResolvedValue(mockResponse);
 
       await postComment(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "owner",
         "repo",
         1,

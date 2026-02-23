@@ -68,7 +68,7 @@ function parseContext(): {
   const { owner, repo } = github.context.repo;
   const identifier =
     "<!-- RubberDuckCrew/artifact2pr - " +
-    (globalThis as any).btoa(`${owner}/${repo}#${prNumber}`) +
+    globalThis.btoa(`${owner}/${repo}#${prNumber}`) +
     " -->";
   const runId = github.context.runId;
 

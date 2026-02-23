@@ -1,6 +1,8 @@
 import { Octokit } from "@octokit/rest";
 
-type CommentResponse = Awaited<ReturnType<Octokit["issues"]["createComment"]>>;
+export type CommentResponse = Awaited<
+  ReturnType<Octokit["issues"]["createComment"]>
+>;
 
 export async function postComment(
   octokit: Octokit,

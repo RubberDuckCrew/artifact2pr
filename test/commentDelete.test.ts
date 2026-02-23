@@ -5,8 +5,15 @@ import { deleteExistingComments } from "../src/commentDelete";
 
 vi.mock("@actions/core");
 
+interface MockOctokit {
+  issues: {
+    listComments: ReturnType<typeof vi.fn>;
+    deleteComment: ReturnType<typeof vi.fn>;
+  };
+}
+
 describe("commentDelete", () => {
-  let mockOctokit: Octokit;
+  let mockOctokit: MockOctokit;
 
   beforeEach(() => {
     mockOctokit = {
@@ -14,7 +21,7 @@ describe("commentDelete", () => {
         listComments: vi.fn(),
         deleteComment: vi.fn(),
       },
-    } as any;
+    };
     vi.clearAllMocks();
   });
 
@@ -27,13 +34,13 @@ describe("commentDelete", () => {
         { id: 3, body: "<!-- test-identifier --> Comment 2" },
       ];
 
-      (mockOctokit.issues.listComments as any).mockResolvedValue({
+      mockOctokit.issues.listComments.mockResolvedValue({
         data: mockComments,
       });
-      (mockOctokit.issues.deleteComment as any).mockResolvedValue({});
+      mockOctokit.issues.deleteComment.mockResolvedValue({});
 
       await deleteExistingComments(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "owner",
         "repo",
         42,
@@ -71,12 +78,12 @@ describe("commentDelete", () => {
         { id: 2, body: "Comment 2" },
       ];
 
-      (mockOctokit.issues.listComments as any).mockResolvedValue({
+      mockOctokit.issues.listComments.mockResolvedValue({
         data: mockComments,
       });
 
       await deleteExistingComments(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "owner",
         "repo",
         42,
@@ -98,13 +105,13 @@ describe("commentDelete", () => {
         { id: 2, body: "<!-- test-identifier --> Comment" },
       ];
 
-      (mockOctokit.issues.listComments as any).mockResolvedValue({
+      mockOctokit.issues.listComments.mockResolvedValue({
         data: mockComments,
       });
-      (mockOctokit.issues.deleteComment as any).mockResolvedValue({});
+      mockOctokit.issues.deleteComment.mockResolvedValue({});
 
       await deleteExistingComments(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "owner",
         "repo",
         10,
@@ -122,12 +129,12 @@ describe("commentDelete", () => {
     it("should handle empty comments list", async () => {
       const identifier = "<!-- test-identifier -->";
 
-      (mockOctokit.issues.listComments as any).mockResolvedValue({
+      mockOctokit.issues.listComments.mockResolvedValue({
         data: [],
       });
 
       await deleteExistingComments(
-        mockOctokit,
+        mockOctokit as unknown as Octokit,
         "owner",
         "repo",
         42,

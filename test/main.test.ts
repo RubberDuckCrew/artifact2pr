@@ -2,9 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { Octokit } from "@octokit/rest";
-import * as artifactsMod from "../src/artifacts";
-import * as commentMod from "../src/commentPost";
-import * as deleteMod from "../src/commentDelete";
+import {
+  getArtifacts,
+  checkIfArtifacts,
+  buildArtifactLinks,
+  Artifact,
+} from "../src/artifacts";
+import { CommentResponse, postComment } from "../src/commentPost";
+import { deleteExistingComments } from "../src/commentDelete";
 import { main } from "../src/main";
 
 vi.mock("@actions/core", () => ({
@@ -12,7 +17,6 @@ vi.mock("@actions/core", () => ({
   info: vi.fn(),
   setFailed: vi.fn(),
 }));
-
 vi.mock("@actions/github", () => ({
   context: {
     payload: {},
@@ -20,23 +24,19 @@ vi.mock("@actions/github", () => ({
     runId: 123,
   },
 }));
-
 vi.mock("@octokit/rest", () => ({
-  Octokit: vi.fn().mockImplementation(function (opts: any) {
+  Octokit: vi.fn().mockImplementation(function (opts) {
     return { __auth: opts?.auth };
   }),
 }));
-
 vi.mock("../src/artifacts", () => ({
   getArtifacts: vi.fn(),
   checkIfArtifacts: vi.fn(),
   buildArtifactLinks: vi.fn(),
 }));
-
 vi.mock("../src/commentPost", () => ({
   postComment: vi.fn(),
 }));
-
 vi.mock("../src/commentDelete", () => ({
   deleteExistingComments: vi.fn(),
 }));
@@ -44,34 +44,35 @@ vi.mock("../src/commentDelete", () => ({
 describe("main()", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     github.context.payload = { pull_request: { number: 11 } };
-    (github.context as any).repo = { owner: "owner", repo: "repo" };
+    github.context.repo.owner = "owner";
+    github.context.repo.repo = "repo";
     github.context.runId = 123;
+
+    vi.mocked(core).getInput.mockImplementation((name: string) => {
+      if (name === "github-token") return "secret";
+      if (name === "comment-heading") return "Heading";
+      if (name === "comment-if-no-artifacts") return "";
+      return "";
+    });
+    vi.mocked(checkIfArtifacts).mockResolvedValue(true);
+    vi.mocked(buildArtifactLinks).mockReturnValue("- [a](l)");
+    vi.mocked(postComment).mockResolvedValue({
+      data: { id: 1 },
+    } as CommentResponse);
+    vi.mocked(deleteExistingComments).mockResolvedValue();
   });
 
   it("posts a comment when artifacts exist", async () => {
-    (core.getInput as any).mockImplementation((name: string) => {
-      if (name === "github-token") return "secret";
-      if (name === "comment-heading") return "## Artifacts";
-      return "";
-    });
-
-    github.context.payload = { pull_request: { number: 11 } };
-    (github.context as any).repo = { owner: "o", repo: "r" };
-    github.context.runId = 555;
-
-    (artifactsMod.getArtifacts as any).mockResolvedValue([
-      { id: 10, name: "a" },
+    vi.mocked(getArtifacts).mockResolvedValue([
+      { id: 10, name: "a" } as Artifact,
     ]);
-    (artifactsMod.checkIfArtifacts as any).mockResolvedValue(true);
-    (artifactsMod.buildArtifactLinks as any).mockReturnValue("- [a](l)");
-    (commentMod.postComment as any).mockResolvedValue({ data: { id: 1 } });
-    (deleteMod.deleteExistingComments as any).mockResolvedValue({});
 
     await main();
 
     expect(Octokit).toHaveBeenCalledWith({ auth: "secret" });
-    expect(commentMod.postComment).toHaveBeenCalled();
+    expect(postComment).toHaveBeenCalled();
     expect(core.info).toHaveBeenCalledWith(
       expect.stringContaining("✅ Comment posted"),
     );
@@ -86,26 +87,13 @@ describe("main()", () => {
   });
 
   it("does not post when no artifacts and no comment message", async () => {
-    (core.getInput as any).mockImplementation((name: string) => {
-      if (name === "github-token") return "secret";
-      if (name === "comment-heading") return "Heading";
-      if (name === "comment-if-no-artifacts") return "";
-      return "";
-    });
-
-    github.context.payload = { pull_request: { number: 7 } };
-    (github.context as any).repo = { owner: "ox", repo: "rx" };
-    github.context.runId = 321;
-
-    (artifactsMod.getArtifacts as any).mockResolvedValue([]);
-    (artifactsMod.checkIfArtifacts as any).mockResolvedValue(false);
-    (deleteMod.deleteExistingComments as any).mockResolvedValue({});
+    vi.mocked(checkIfArtifacts).mockResolvedValue(false);
 
     await main();
 
-    expect(commentMod.postComment).not.toHaveBeenCalled();
+    expect(postComment).not.toHaveBeenCalled();
     expect(core.info).toHaveBeenCalledWith(
-      expect.stringContaining("⚠️ No artifacts found for workflow run 321"),
+      expect.stringContaining("⚠️ No artifacts found for workflow run 123"),
     );
   });
 });
