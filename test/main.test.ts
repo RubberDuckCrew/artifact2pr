@@ -25,7 +25,7 @@ vi.mock("@actions/github", () => ({
   },
 }));
 vi.mock("@octokit/rest", () => ({
-  Octokit: vi.fn().mockImplementation(function (opts) {
+  Octokit: vi.fn().mockImplementation(function (opts?: { auth?: string }) {
     return { __auth: opts?.auth };
   }),
 }));
