@@ -15,8 +15,17 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.inputs.version }}
 
     steps:
+      - name: Validate version input
+        run: |
+          if ! echo "$VERSION" | grep -E -x '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$' >/dev/null; then
+            echo "ERROR: VERSION is not a valid semver: '$VERSION'"
+            exit 1
+          fi
+
       - name: Check if secrets are available
         id: check-secrets
         run: |
@@ -46,7 +55,7 @@ jobs:
           cache: "npm"
 
       - name: Update package.json version
-        run: npm version --new-version ${{ github.event.inputs.version }} --no-git-tag-version
+        run: npm version "$VERSION" --no-git-tag-version
 
       - name: Install dependencies
         run: npm install
@@ -63,7 +72,7 @@ jobs:
       - name: Commit changes
         uses: suzuki-shunsuke/commit-action@f12e2d628a4ab72dcefe7890ae07e8dbf1e201b9 # v0.1.1
         with:
-          commit_message: "🔖 Release v${{ github.event.inputs.version }} [skip ci]"
+          commit_message: "🔖 Release v${{ env.VERSION }} [skip ci]"
           files: |
             dist/
             package.json
@@ -74,8 +83,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
-          tag_name: "v${{ github.event.inputs.version }}"
-          name: "🔖 artifact2pr ${{ github.event.inputs.version }}"
+          tag_name: "v${{ env.VERSION }}"
+          name: "🔖 artifact2pr ${{ env.VERSION }}"
           draft: true
           prerelease: false
 
