@@ -1,129 +1,132 @@
 name: Build and Test Action
 
 on:
-    push:
-        branches: [main]
-    pull_request:
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
-    build:
-        name: Build Action
-        runs-on: ubuntu-latest
+  build:
+    name: Build Action
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-            - name: Npm setup
-              uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-              with:
-                  node-version: 24.14.0
-                  cache: "npm"
+      - name: Npm setup
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 24.14.0
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Run tests
-              run: npm test
+      - name: Lint code
+        run: npm run lint
 
-            - name: Build action
-              run: npm run build
+      - name: Run tests
+        run: npm test
 
-            - name: Upload action artifact
-              uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-              with:
-                  name: action-dist
-                  path: dist
+      - name: Build action
+        run: npm run build
 
-    test:
-        name: Test Action
-        runs-on: ubuntu-latest
-        needs: build
-        if: github.event_name == 'pull_request'
+      - name: Upload action artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: action-dist
+          path: dist
 
-        permissions:
-            pull-requests: write
+  test:
+    name: Test Action
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
 
-        steps:
-            - name: Create test file
-              run: |
-                  mkdir -p test-artifact
-                  echo "Creating artifact for ${{ github.ref }} on ${{ github.sha }}" > test-artifact/test.txt
+    permissions:
+      pull-requests: write
 
-            - name: Upload test artifact
-              uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-              with:
-                  name: dummy-artifact
-                  path: test-artifact/test.txt
+    steps:
+      - name: Create test file
+        run: |
+          mkdir -p test-artifact
+          echo "Creating artifact for ${{ github.ref }} on ${{ github.sha }}" > test-artifact/test.txt
 
-            - name: Checkout repository
-              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-              with:
-                  sparse-checkout: action.yml
+      - name: Upload test artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: dummy-artifact
+          path: test-artifact/test.txt
 
-            - name: Download action artifact
-              uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
-              with:
-                  name: action-dist
-                  path: dist
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          sparse-checkout: action.yml
 
-            - name: Test action in workflow
-              uses: ./
-              with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  comment-heading: "🧪 **Test Artifacts**"
-                  comment-if-no-artifacts: "⚠️ No artifacts found in test run."
+      - name: Download action artifact
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: action-dist
+          path: dist
 
-    commit-build:
-        name: Commit Action Build
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-        needs: build
+      - name: Test action in workflow
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-heading: "🧪 **Test Artifacts**"
+          comment-if-no-artifacts: "⚠️ No artifacts found in test run."
 
-        permissions:
-            contents: write
+  commit-build:
+    name: Commit Action Build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: build
 
-        steps:
-            - name: Check if secrets are available
-              id: check-secrets
-              run: |
-                  echo "secrets_available=${{
-                    vars.RUBBERDUCKCREW_BOT_APP_ID &&
-                    secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY &&
-                    'true' || ''
-                  }}" >> "$GITHUB_OUTPUT"
+    permissions:
+      contents: write
 
-            - name: Create GitHub App token
-              uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-              if: ${{ steps.check-secrets.outputs.secrets_available }}
-              id: app-token
-              with:
-                  app-id: ${{ vars.RUBBERDUCKCREW_BOT_APP_ID }}
-                  private-key: ${{ secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY }}
+    steps:
+      - name: Check if secrets are available
+        id: check-secrets
+        run: |
+          echo "secrets_available=${{
+            vars.RUBBERDUCKCREW_BOT_APP_ID &&
+            secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY &&
+            'true' || ''
+          }}" >> "$GITHUB_OUTPUT"
 
-            - name: Checkout repository
-              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create GitHub App token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        if: ${{ steps.check-secrets.outputs.secrets_available }}
+        id: app-token
+        with:
+          app-id: ${{ vars.RUBBERDUCKCREW_BOT_APP_ID }}
+          private-key: ${{ secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY }}
 
-            - name: Download action artifact
-              uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
-              with:
-                  name: action-dist
-                  path: dist
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-            - name: Check for repo changes
-              id: changes
-              run: |
-                  if [ -n "$(git status --porcelain --untracked-files=all dist)" ]; then
-                    echo "changes=true" >> "$GITHUB_OUTPUT"
-                  else
-                    echo "changes=false" >> "$GITHUB_OUTPUT"
-                  fi
+      - name: Download action artifact
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: action-dist
+          path: dist
 
-            - name: Commit dist directory
-              if: steps.changes.outputs.changes == 'true'
-              uses: suzuki-shunsuke/commit-action@f12e2d628a4ab72dcefe7890ae07e8dbf1e201b9 # v0.1.1
-              with:
-                  commit_message: "📦 Update action build [skip ci]"
-                  files: dist/
-                  github_token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
-                  fail_on_self_push: false
+      - name: Check for repo changes
+        id: changes
+        run: |
+          if [ -n "$(git status --porcelain --untracked-files=all dist)" ]; then
+            echo "changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit dist directory
+        if: steps.changes.outputs.changes == 'true'
+        uses: suzuki-shunsuke/commit-action@f12e2d628a4ab72dcefe7890ae07e8dbf1e201b9 # v0.1.1
+        with:
+          commit_message: "📦 Update action build [skip ci]"
+          files: dist/
+          github_token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+          fail_on_self_push: false
