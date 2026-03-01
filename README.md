@@ -27,7 +27,7 @@ Add this action to your workflow after your build and artifact upload steps:
 
 ```yaml
 - name: Post artifact links to PR
-  uses: RubberDuckCrew/artifact2pr@v0
+  uses: RubberDuckCrew/artifact2pr@v1
   with:
     github-token: ${{ secrets.GITHUB_TOKEN }}
     comment-heading: "📦 **Build Artifacts**"
@@ -47,24 +47,26 @@ permissions:
 name: Build and Post Artifacts
 on:
   pull_request:
-    types: [labeled, opened, synchronize]
-
-permissions:
-  pull-requests: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
       - name: Build
         run: |
           echo "Build your project here"
+
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: my-artifact
           path: ./path/to/artifact
+
       - name: Post artifact links to PR
         uses: RubberDuckCrew/artifact2pr@v1
         with:
