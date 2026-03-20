@@ -10,6 +10,6 @@ on:
 
 jobs:
   run:
-    uses: RubberDuckCrew/.github/.github/workflows/action-sync-labels.yml@v1
+    uses: RubberDuckCrew/.github/.github/workflows/action-sync-labels.yml@v2.0.0
     permissions:
       issues: write
