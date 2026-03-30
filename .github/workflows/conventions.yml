@@ -6,7 +6,7 @@ on:
 
 jobs:
   run:
-    uses: RubberDuckCrew/.github/.github/workflows/action-conventions.yml@v1
+    uses: RubberDuckCrew/.github/.github/workflows/action-conventions.yml@v2.0.0
     permissions:
       issues: write
       pull-requests: write

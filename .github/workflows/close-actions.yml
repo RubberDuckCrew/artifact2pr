@@ -8,8 +8,7 @@ on:
 
 jobs:
   run:
-    uses: RubberDuckCrew/.github/.github/workflows/action-close-actions.yml@v1
-    secrets: inherit
+    uses: RubberDuckCrew/.github/.github/workflows/action-close-actions.yml@v2.0.0
     permissions:
       issues: write
       pull-requests: write
