@@ -101,7 +101,7 @@ jobs:
         if: ${{ steps.check-secrets.outputs.secrets_available }}
         id: app-token
         with:
-          app-id: ${{ vars.RUBBERDUCKCREW_BOT_APP_ID }}
+          client-id: ${{ vars.RUBBERDUCKCREW_BOT_APP_ID }}
           private-key: ${{ secrets.RUBBERDUCKCREW_BOT_APP_PRIVATE_KEY }}
 
       - name: Checkout repository
